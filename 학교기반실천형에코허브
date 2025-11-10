@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>School Climate Action Hub</title>
+  <style>
+    /* 기본 레이아웃: 심플·명료 UI */
+    :root {
+      --maxw: 980px;
+      --gap: 16px;
+      --accent: #1270a6;
+      --muted: #666;
+      --card-bg: #f8fbff;
+      --glass: rgba(255,255,255,0.85);
+    }
+    body { font-family: "Noto Sans KR", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin:0; background:#eef6fb; color:#111; display:flex; justify-content:center; }
+    .wrap { width:100%; max-width:var(--maxw); padding:24px; box-sizing:border-box; }
+    header { display:flex; gap:12px; align-items:center; }
+    .logo { background:var(--accent); color:white; padding:10px 14px; border-radius:8px; font-weight:700; }
+    h1{ margin:0; font-size:1.3rem; }
+    p.lead { color:var(--muted); margin-top:6px; }
+
+    .grid { display:grid; grid-template-columns: 1fr 340px; gap:var(--gap); margin-top:20px; }
+    @media(max-width:900px){ .grid { grid-template-columns: 1fr; } .rightCol{ order:2; } }
+
+    /* 카드 */
+    .card { background:var(--card-bg); padding:14px; border-radius:10px; box-shadow:0 2px 8px rgba(18,112,166,0.06); }
+    .card h2{ margin:0 0 8px 0; font-size:1.05rem; color:var(--accent) }
+    .module-list { display:flex; flex-direction:column; gap:10px; margin-top:8px; }
+
+    .module { border:1px solid rgba(18,112,166,0.08); padding:10px; border-radius:8px; background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(250,255,255,0.9)); }
+    .module small{ color:var(--muted); display:block; margin-bottom:6px; }
+
+    /* 계산기 */
+    .calc-row{ display:flex; gap:8px; align-items:center; margin-top:8px; }
+    input[type="number"], input[type="text"], select, textarea { padding:8px; border-radius:6px; border:1px solid #ddd; width:100%; box-sizing:border-box; }
+    button { background:var(--accent); color:white; border:0; padding:10px 12px; border-radius:8px; cursor:pointer; }
+    .muted{ color:var(--muted); font-size:0.95rem; }
+
+    /* 프로젝트 목록 */
+    .projects { margin-top:12px; display:flex; flex-direction:column; gap:8px; max-height:300px; overflow:auto; }
+    .proj { padding:8px; border-radius:6px; border:1px dashed rgba(18,112,166,0.08); background:white; }
+
+    footer { margin-top:18px; color:var(--muted); font-size:0.9rem; text-align:center; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">EcoHub</div>
+      <div>
+        <h1>School Climate Action Hub</h1>
+        <p class="lead">교사·학생이 함께 만드는 지역 기반 기후·생태 실천 플랫폼(간이판)</p>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- 왼쪽: 주요 콘텐츠 -->
+      <main>
+        <section class="card">
+          <h2>핵심 목적</h2>
+          <p class="muted">교육: 지역 문제를 탐구하고, 작은 실천을 통해 학습과 변화를 연결합니다. 교사용 자료 + 학생 프로젝트 템플릿을 제공합니다.</p>
+        </section>
+
+        <section class="card" style="margin-top:12px;">
+          <h2>학습 모듈 샘플</h2>
+          <div class="module-list">
+            <div class="module">
+              <small>교사용 · 45분 수업안</small>
+              <strong>모듈 A: 우리 학교 주변의 물 문제 탐구</strong>
+              <p class="muted">탐구 질문 → 현장 관찰 → 데이터 기록 → 개선 방안 제안</p>
+            </div>
+            <div class="module">
+              <small>학생용 · PBL 템플릿</small>
+              <strong>모듈 B: 플라스틱 사용 줄이기 캠페인</strong>
+              <p class="muted">측정(교내 폐기물) → 실험(대체품) → 캠페인 실행 → 결과 공유</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" style="margin-top:12px;">
+          <h2>간단 탄소 절감 계산기</h2>
+          <p class="muted">아래 항목을 선택하면 예상 연간 CO₂ 절감량(간이 계산)을 보여줍니다.</p>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;">
+            <div style="flex:1; min-width:220px;">
+              <label>LED로 전등 교체한 등 수</label>
+              <input id="ledCount" type="number" min="0" value="0" />
+            </div>
+            <div style="flex:1; min-width:220px;">
+              <label>매일 버스/지하철로 통학하는 학생 수(자동차 대신)</label>
+              <input id="transCount" type="number" min="0" value="0" />
+            </div>
+          </div>
+
+          <div class="calc-row">
+            <button id="calcBtn">계산하기</button>
+            <div id="calcResult" class="muted">결과가 여기에 표시됩니다.</div>
+          </div>
+
+          <small class="muted" style="display:block; margin-top:8px;">(참고: 본 계산기는 교육용 간이 값입니다. 실측 데이터/전문 계산은 별도 과정 필요)</small>
+        </section>
+
+        <section class="card" style="margin-top:12px;">
+          <h2>프로젝트 제출(클래스 활동)</h2>
+          <p class="muted">프로젝트 제목과 간단 설명, 사진(옵션)을 올려 반 친구들과 공유하세요.</p>
+          <div style="display:flex; gap:8px; margin-top:8px; flex-direction:column;">
+            <input id="projTitle" type="text" placeholder="프로젝트 제목 (예: 학교 텃밭 가꾸기)" />
+            <textarea id="projDesc" placeholder="간단한 활동 설명(한두 줄)" rows="3"></textarea>
+            <div style="display:flex; gap:8px;">
+              <input id="projAuthor" type="text" placeholder="작성자(학급/이름)" />
+              <button id="projSave">제출</button>
+            </div>
+            <div class="projects" id="projectList" aria-live="polite"></div>
+          </div>
+        </section>
+      </main>
+
+      <!-- 오른쪽: 사이드바 -->
+      <aside class="rightCol">
+        <div class="card">
+          <h2>교사용 바로가기</h2>
+          <p class="muted">짧은 연수 동영상, 교수안 다운로드, 평가 루브릭(클릭시 샘플 문서 제공)</p>
+          <div style="display:flex; gap:8px; margin-top:8px; flex-direction:column;">
+            <button onclick="alert('샘플 연수 영상: (교육용)')">연수 영상 보기</button>
+            <button onclick="alert('교수안 다운로드(샘플)')">교수안 다운로드</button>
+            <button onclick="alert('평가 루브릭 예시')">평가 루브릭</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px;">
+          <h2>학생 서약</h2>
+          <p class="muted">작은 약속부터 시작해요. 서약을 클릭하면 로컬에 저장됩니다.</p>
+          <div style="display:flex; gap:8px; margin-top:8px;">
+            <input id="pledgeName" type="text" placeholder="이름(학급)" />
+            <button id="pledgeBtn">서약하기</button>
+          </div>
+          <div id="pledgeList" style="margin-top:8px; font-size:0.95rem; color:var(--muted)"></div>
+        </div>
+
+        <div class="card" style="margin-top:12px;">
+          <h2>빠른 참고자료</h2>
+          <ul style="padding-left:18px; margin:0; color:var(--muted)">
+            <li>기후교육 핵심 개념(짧은 글)</li>
+            <li>지역 리스크 체크리스트</li>
+            <li>원격 수업 템플릿(재난 시)</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="card" style="margin-top:18px;">
+      <div style="font-size:0.95rem;">이 페이지는 교육용 간이 데모입니다. 실제 운영 시 데이터 저장(서버), API 연동, 개인정보 보호(학생 사진 등) 정책 검토가 필요합니다.</div>
+    </footer>
+  </div>
+
+  <script>
+    // --- 간단 탄소 계산기 로직(교육용 간이 계산)
+    // 가정: LED 전환 1개당 연간 약 20kgCO2 절감(가정치, 교육용)
+    // 자동차 대신 대중교통 전환 1인당 연간 약 500kgCO2 절감(가정치, 교육용)
+    // (실제 수치는 지역·활동에 따라 다름 — 교육 목적의 예시)
+    const calcBtn = document.getElementById('calcBtn');
+    const ledCount = document.getElementById('ledCount');
+    const transCount = document.getElementById('transCount');
+    const calcResult = document.getElementById('calcResult');
+
+    calcBtn.addEventListener('click', () => {
+      const led = Math.max(0, Number(ledCount.value) || 0);
+      const trans = Math.max(0, Number(transCount.value) || 0);
+      const ledSaving = led * 20; // kgCO2/yr
+      const transSaving = trans * 500; // kgCO2/yr
+      const total = ledSaving + transSaving;
+      calcResult.textContent = `예상 절감량: ${Math.round(total).toLocaleString()} kgCO₂/년 (LED:${ledSaving}kg, 대중교통:${transSaving}kg)`;
+    });
+
+    // --- 프로젝트 저장(로컬 저장소)
+    const projSave = document.getElementById('projSave');
+    const projectList = document.getElementById('projectList');
+    const projTitle = document.getElementById('projTitle');
+    const projDesc = document.getElementById('projDesc');
+    const projAuthor = document.getElementById('projAuthor');
+
+    function loadProjects(){
+      const raw = localStorage.getItem('eco_projects');
+      const arr = raw ? JSON.parse(raw) : [];
+      projectList.innerHTML = '';
+      arr.slice().reverse().forEach(p => {
+        const d = document.createElement('div'); d.className='proj';
+        d.innerHTML = `<strong>${escapeHtml(p.title)}</strong><div class="muted">${escapeHtml(p.desc)}</div><div style="font-size:0.85rem;color:#888;margin-top:6px;">작성: ${escapeHtml(p.author)} · ${new Date(p.t).toLocaleString()}</div>`;
+        projectList.appendChild(d);
+      });
+    }
+    projSave.addEventListener('click', ()=>{
+      const title = projTitle.value.trim();
+      const desc = projDesc.value.trim();
+      const author = projAuthor.value.trim() || '익명';
+      if(!title){ alert('프로젝트 제목을 입력하세요.'); return; }
+      const raw = localStorage.getItem('eco_projects');
+      const arr = raw ? JSON.parse(raw) : [];
+      arr.push({title, desc, author, t: Date.now()});
+      localStorage.setItem('eco_projects', JSON.stringify(arr));
+      projTitle.value=''; projDesc.value=''; projAuthor.value='';
+      loadProjects();
+    });
+    loadProjects();
+
+    // --- 서약(pledge) 저장
+    const pledgeBtn = document.getElementById('pledgeBtn');
+    const pledgeName = document.getElementById('pledgeName');
+    const pledgeList = document.getElementById('pledgeList');
+
+    function loadPledges(){
+      const raw = localStorage.getItem('eco_pledges');
+      const arr = raw ? JSON.parse(raw) : [];
+      pledgeList.textContent = arr.slice().reverse().join(', ');
+    }
+    pledgeBtn.addEventListener('click', ()=>{
+      const n = pledgeName.value.trim();
+      if(!n){ alert('이름(학급)을 입력하세요.'); return; }
+      const raw = localStorage.getItem('eco_pledges');
+      const arr = raw ? JSON.parse(raw) : [];
+      arr.push(n + ' (' + new Date().toLocaleDateString() + ')');
+      localStorage.setItem('eco_pledges', JSON.stringify(arr));
+      pledgeName.value='';
+      loadPledges();
+    });
+    loadPledges();
+
+    // 안전한 HTML 이스케이프
+    function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  </script>
+</body>
+</html>
